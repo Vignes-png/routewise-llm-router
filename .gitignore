@@ -1,0 +1,33 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Secrets and API keys
+.env
+.env.*
+!.env.example
+
+# Local databases and logs
+*.db
+*.sqlite
+*.sqlite3
+*.log
+logs/
+
+# Model caches
+.cache/
+hf_cache/
+
+# IDE and operating system files
+.spyproject/
+.DS_Store
+Thumbs.db
