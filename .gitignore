@@ -31,3 +31,5 @@ hf_cache/
 .spyproject/
 .DS_Store
 Thumbs.db
+
+.vscode/
