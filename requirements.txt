@@ -1,5 +1,7 @@
-
 fastapi
 uvicorn[standard]
 pytest
 httpx
+sentence-transformers
+litellm
+python-dotenv
