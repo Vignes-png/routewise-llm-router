@@ -108,3 +108,26 @@ Never commit API keys, passwords, or other secrets to Git.
 
 
 
+## Observability
+
+RouteWise records metadata for requests reaching `POST /chat` in a local
+SQLite database named `routewise.db`.
+
+Recorded metadata includes routing decisions, the selected model, latency,
+provider-reported token usage, success or failure status, and estimated cost
+when pricing and usage data are available.
+
+Prompts, generated answers, API keys, and raw provider error messages are not
+stored in the observability database.
+
+To inspect the latest requests, activate the `routewise` environment and run:
+
+```powershell
+python -m app.observability
+```
+
+The cost figures are estimates based on the configured model-pricing table,
+not actual billing records. Unknown costs are stored as unknown.
+
+The local database and its journal files must not be committed to Git.
+
