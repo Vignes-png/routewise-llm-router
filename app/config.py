@@ -26,3 +26,14 @@ def get_gemini_api_key() -> str | None:
     """Return the Gemini API key from the environment, or None if it is missing/blank."""
     key = os.environ.get("GEMINI_API_KEY", "").strip()
     return key or None
+
+
+def get_database_path() -> Path:
+    """Return the SQLite file used for observability.
+
+    Defaults to routewise.db in the project root. Set ROUTEWISE_DB_PATH in the
+    environment (or .env) to use a different file. Read at call time so tests
+    can point it at a temporary file.
+    """
+    override = os.environ.get("ROUTEWISE_DB_PATH", "").strip()
+    return Path(override) if override else PROJECT_ROOT / "routewise.db"

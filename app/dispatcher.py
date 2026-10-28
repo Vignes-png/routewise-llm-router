@@ -26,12 +26,17 @@ logger = logging.getLogger("routewise.dispatcher")
 
 
 class DispatchError(Exception):
-    """A model-call error with a safe message for API callers."""
+    """A model-call error with a safe message for API callers.
 
-    def __init__(self, status_code: int, message: str):
+    `category` is a short fixed label (for example "rate_limit") that is
+    recorded in the observability database instead of any provider text.
+    """
+
+    def __init__(self, status_code: int, message: str, category: str = "provider_error"):
         super().__init__(message)
         self.status_code = status_code
         self.message = message
+        self.category = category
 
 
 @dataclass(frozen=True)
@@ -52,35 +57,41 @@ def to_dispatch_error(exc: Exception) -> DispatchError:
         return DispatchError(
             503,
             "The model provider rejected the server's API credentials.",
+            "provider_auth",
         )
 
     if isinstance(exc, litellm.RateLimitError):
         return DispatchError(
             429,
             "The model provider's rate limit or quota was reached. Try again later.",
+            "rate_limit",
         )
 
     if isinstance(exc, litellm.Timeout):
         return DispatchError(
             504,
             "The model provider did not respond in time.",
+            "timeout",
         )
 
     if isinstance(exc, litellm.NotFoundError):
         return DispatchError(
             502,
             "The configured model was not found by the provider.",
+            "model_not_found",
         )
 
     if isinstance(exc, litellm.BadRequestError):
         return DispatchError(
             502,
             "The model provider rejected the request.",
+            "bad_request",
         )
 
     return DispatchError(
         502,
         "The model provider returned an error. Try again later.",
+        "provider_error",
     )
 
 
@@ -113,6 +124,7 @@ def dispatch_to_model(model: str, prompt: str) -> DispatchResult:
         raise DispatchError(
             503,
             "GEMINI_API_KEY is not configured on the server.",
+            "missing_credentials",
         )
 
     try:
@@ -153,6 +165,7 @@ def dispatch_to_model(model: str, prompt: str) -> DispatchResult:
         raise DispatchError(
             502,
             "The model returned an empty response.",
+            "empty_response",
         )
 
     return DispatchResult(
