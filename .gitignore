@@ -33,3 +33,5 @@ hf_cache/
 Thumbs.db
 
 .vscode/
+# Generated routing benchmark results
+/reports/routing_benchmark_results.csv
