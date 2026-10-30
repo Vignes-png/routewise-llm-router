@@ -148,7 +148,7 @@ def test_complex_prompt_gets_strong_tier(fake_model):
 
 
 def test_complex_reasoning_prompt_gets_strong_tier(fake_model):
-    decision = route_prompt_semantic("Prove that there are infinitely many primes.")
+    decision = route_prompt_semantic("Prove step by step that there are infinitely many primes.")
     assert decision.task_category == "reasoning"
     assert decision.model_tier == "strong"
 

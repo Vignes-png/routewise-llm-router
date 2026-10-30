@@ -13,12 +13,12 @@ from pathlib import Path
 
 import pytest
 
-from app.routing import LONG_PROMPT_CHARS
 from app.schemas import MAX_PROMPT_LENGTH, RouteResponse, SemanticRouteResponse
 from app.semantic import CATEGORY_EXAMPLES, SemanticModelError
 from scripts import benchmark_routing as bench
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+LONG_PROMPT_CHARS = 1500  # "long input" size the dataset must contain (routing has no length rule any more)
 SHIPPED_DATASET = PROJECT_ROOT / "data" / "routing_benchmark.jsonl"
 
 

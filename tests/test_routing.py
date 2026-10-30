@@ -3,7 +3,6 @@
 import pytest
 
 from app.routing import (
-    LONG_PROMPT_CHARS,
     assess_complexity,
     build_reason,
     classify_task,
@@ -49,10 +48,11 @@ def test_assess_complexity_keyword():
     assert "deadlock" in signals
 
 
-def test_assess_complexity_long_prompt():
-    is_complex, signals = assess_complexity("x " * LONG_PROMPT_CHARS)
-    assert is_complex is True
-    assert any("long prompt" in s for s in signals)
+def test_long_prompt_alone_is_not_complex():
+    # Length never escalates a prompt by itself (intentional change).
+    is_complex, signals = assess_complexity("x " * 5000)
+    assert is_complex is False
+    assert signals == []
 
 
 def test_select_tier():

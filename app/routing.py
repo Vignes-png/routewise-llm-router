@@ -31,17 +31,32 @@ CATEGORY_KEYWORDS: dict[str, tuple[str, ...]] = {
     ),
 }
 
-# Phrases that signal a hard task and push the request to the strong tier.
-COMPLEXITY_KEYWORDS: tuple[str, ...] = (
-    "race condition", "deadlock", "concurrency", "concurrent", "multithreaded",
-    "memory leak", "distributed", "architecture", "system design", "scalab",
-    "optimize", "optimise", "performance bottleneck", "prove", "proof",
-    "step by step", "trade-off", "tradeoff", "trade off", "complex",
-    "multi-step", "formal", "rigorous", "root cause", "security vulnerability",
+# --- Complexity policy -----------------------------------------------------
+# Chooses the model tier from the prompt text ONLY. It never looks at the task
+# category, so the rule-based and the semantic router share it unchanged.
+#
+# A single word never makes a prompt "strong", and neither does length. A prompt
+# is strong only when a demanding REQUEST meets a context that makes it hard:
+#   1. a technical task (debug / design / optimise ...) in a hard-systems context
+#   2. a proof or derivation with an explicit demand for rigor or steps
+
+# What the user asks us to DO (diagnose, repair, design, optimise, weigh options).
+TECHNICAL_TASK_CUES: tuple[str, ...] = (
+    "debug", "diagnos", "troubleshoot", "root cause", "causing", "cause of",
+    "find the", "fix", "track down", "optimi", "design",
+    "trade-off", "tradeoff", "trade off",
 )
 
-# Prompts at least this long are treated as likely complex.
-LONG_PROMPT_CHARS = 1500
+# Terms for hard-to-reason-about system behaviour (the topic, not the task).
+HARD_SYSTEMS_CUES: tuple[str, ...] = (
+    "race condition", "deadlock", "memory leak", "concurren", "multithread",
+    "distributed", "scalab", "at scale", "latency", "throughput", "in production",
+    "single point of failure", "high availability", "fault toleran",
+    "performance bottleneck",
+)
+
+PROOF_CUES: tuple[str, ...] = ("prove", "derive", "proof")
+RIGOR_CUES: tuple[str, ...] = ("step by step", "rigorous", "formally")
 
 
 def find_matches(text: str, keywords: tuple[str, ...]) -> list[str]:
@@ -64,10 +79,19 @@ def classify_task(prompt: str) -> tuple[TaskCategory, list[str]]:
 
 
 def assess_complexity(prompt: str) -> tuple[bool, list[str]]:
-    """Return (is_complex, signals) using keyword and length heuristics."""
-    signals = find_matches(prompt, COMPLEXITY_KEYWORDS)
-    if len(prompt) >= LONG_PROMPT_CHARS:
-        signals.append(f"long prompt (>= {LONG_PROMPT_CHARS} characters)")
+    """Return (is_complex, signals). Each rule needs TWO ingredients; one cue is never enough."""
+    signals: list[str] = []
+
+    tasks = find_matches(prompt, TECHNICAL_TASK_CUES)
+    systems = find_matches(prompt, HARD_SYSTEMS_CUES)
+    if tasks and systems:
+        signals += ["technical task in a hard-systems context", tasks[0], systems[0]]
+
+    proofs = find_matches(prompt, PROOF_CUES)
+    rigor = find_matches(prompt, RIGOR_CUES)
+    if proofs and rigor:
+        signals += ["proof or derivation with explicit rigor", proofs[0], rigor[0]]
+
     return bool(signals), signals
 
 
