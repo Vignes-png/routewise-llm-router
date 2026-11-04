@@ -1,0 +1,65 @@
+{
+  "seed": 42,
+  "sample_size_per_dataset": 20,
+  "sources": {
+    "gsm8k": {
+      "dataset": "openai/gsm8k",
+      "split": "test",
+      "revision": "740312add88f781978c0658806c59bc2815b9866",
+      "license": "MIT",
+      "selected_ids": [
+        "gsm8k_d48d64857c03",
+        "gsm8k_1dd8f2b10090",
+        "gsm8k_e0191327ea7a",
+        "gsm8k_3ffaf0e0f72b",
+        "gsm8k_36085227984a",
+        "gsm8k_1695cf1a1119",
+        "gsm8k_314249fd39ab",
+        "gsm8k_e5dbfc5b4e41",
+        "gsm8k_32b8a253ab1e",
+        "gsm8k_0407558da1e3",
+        "gsm8k_deca50be4e14",
+        "gsm8k_44bcc203592d",
+        "gsm8k_701ed18140ee",
+        "gsm8k_98ea04051b45",
+        "gsm8k_b1d6f8eda924",
+        "gsm8k_3170174688bb",
+        "gsm8k_97d5219c26d5",
+        "gsm8k_8a439a3a19b7",
+        "gsm8k_39fda382b145",
+        "gsm8k_12ba917704bb"
+      ]
+    },
+    "ifeval": {
+      "dataset": "google/IFEval",
+      "split": "train",
+      "revision": "b5fce8ae859b860d95b131137da74f013e1ec333",
+      "license": "Apache-2.0",
+      "raw_rows": 1082,
+      "unique_rows": 541,
+      "duplicates_removed": 541,
+      "selected_ids": [
+        "1418",
+        "3041",
+        "209",
+        "2471",
+        "1246",
+        "1508",
+        "1148",
+        "2889",
+        "2844",
+        "2243",
+        "1203",
+        "1643",
+        "3752",
+        "2585",
+        "2107",
+        "1392",
+        "2284",
+        "2724",
+        "2807",
+        "1927"
+      ]
+    }
+  }
+}

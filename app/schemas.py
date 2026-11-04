@@ -1,19 +1,33 @@
+
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+
 MAX_PROMPT_LENGTH = 4000
 
 TaskCategory = Literal[
-    "coding", "reasoning", "summarization", "creative_writing", "general"
+    "coding",
+    "reasoning",
+    "summarization",
+    "creative_writing",
+    "general",
 ]
+
 ModelTier = Literal["cheap", "strong"]
+
+ChatMode = Literal["auto", "fast", "quality"]
+
+ChatRoutingMethod = Literal[
+    "semantic_plus_rules",
+    "manual_fast",
+    "manual_quality",
+]
 
 
 class RouteRequest(BaseModel):
-    """Incoming request body for POST /route, POST /route/semantic and POST /chat."""
+    """Incoming request body for POST /route and POST /route/semantic."""
 
-    # Strip leading/trailing whitespace BEFORE length checks, so "   " is rejected.
     model_config = ConfigDict(str_strip_whitespace=True)
 
     prompt: str = Field(
@@ -25,8 +39,30 @@ class RouteRequest(BaseModel):
     )
 
 
+class ChatRequest(BaseModel):
+    """Incoming request body for POST /chat."""
+
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    prompt: str = Field(
+        ...,
+        min_length=1,
+        max_length=MAX_PROMPT_LENGTH,
+        description="The user prompt to route and answer.",
+        examples=["Explain what a Python list is."],
+    )
+
+    mode: ChatMode = Field(
+        default="auto",
+        description=(
+            "Operating mode: auto (semantic + rules), "
+            "fast (cheap tier), or quality (strong tier)."
+        ),
+    )
+
+
 class RouteResponse(BaseModel):
-    """Structured routing decision returned by POST /route (unchanged)."""
+    """Structured routing decision returned by POST /route."""
 
     task_category: TaskCategory
     model_tier: ModelTier
@@ -35,24 +71,25 @@ class RouteResponse(BaseModel):
 
 
 class SemanticRouteResponse(BaseModel):
-    """Routing decision returned by POST /route/semantic.
-
-    A separate model (not a subclass of RouteResponse) so the /route contract
-    stays exactly as it was.
-    """
+    """Routing decision returned by POST /route/semantic."""
 
     task_category: TaskCategory
     model_tier: ModelTier
     routing_method: Literal["semantic_plus_rules"] = "semantic_plus_rules"
+
     similarity_score: float = Field(
         ...,
-        description="Aggregated cosine similarity of the best category (not a probability).",
+        description=(
+            "Aggregated cosine similarity of the best category "
+            "(not a probability)."
+        ),
     )
+
     reason: str
 
 
 class TokenUsage(BaseModel):
-    """Token counts as reported by the provider (any field may be missing)."""
+    """Token counts reported by the provider."""
 
     prompt_tokens: int | None = None
     completion_tokens: int | None = None
@@ -60,16 +97,36 @@ class TokenUsage(BaseModel):
 
 
 class ChatResponse(BaseModel):
-    """Response of POST /chat: the model's answer plus how it was routed."""
+    """
+    Response of POST /chat.
+
+    The response body deliberately preserves the original contract.
+    The selected mode can be identified through routing_method.
+    """
 
     answer: str
-    model: str = Field(..., description="LiteLLM id of the model that produced the answer.")
-    task_category: TaskCategory
+
+    model: str = Field(
+        ...,
+        description="LiteLLM ID of the model that produced the answer.",
+    )
+
+    task_category: TaskCategory | None
+
     model_tier: ModelTier
-    routing_method: Literal["semantic_plus_rules"] = "semantic_plus_rules"
+
+    routing_method: ChatRoutingMethod = "semantic_plus_rules"
+
     similarity_score: float | None = None
+
     reason: str
-    latency_ms: int = Field(..., description="Wall-clock time of the model call only.")
+
+    latency_ms: int = Field(
+        ...,
+        description="Wall-clock time of the model call only.",
+    )
+
     usage: TokenUsage | None = Field(
-        None, description="Token usage, or null when the provider did not supply it."
+        None,
+        description="Token usage, or null when the provider did not supply it.",
     )

@@ -138,10 +138,6 @@ def dispatch_to_model(model: str, prompt: str) -> DispatchResult:
             "num_retries": 0,
         }
 
-        # Reduce reasoning effort for the strong model to try
-        # to reduce response time.
-        if model == "gemini/gemini-3.6-flash":
-            completion_kwargs["reasoning_effort"] = "low"
 
         response = litellm.completion(**completion_kwargs)
 

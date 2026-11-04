@@ -1,0 +1,4 @@
+{"id": "pilot_01", "category": "coding", "prompt": "Write a Python function to efficiently merge a list of overlapping time intervals. Include time complexity analysis."}
+{"id": "pilot_02", "category": "reasoning", "prompt": "A bat and a ball cost $1.10 in total. The bat costs $1.00 more than the ball. How much does the ball cost? Explain your steps."}
+{"id": "pilot_03", "category": "summarization", "prompt": "Summarize the key differences between optimistic and pessimistic concurrency control in database systems in exactly three bullet points."}
+{"id": "pilot_04", "category": "creative_writing", "prompt": "Write a four-line poem about a server outage, in the style of Edgar Allan Poe."}

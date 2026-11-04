@@ -1,0 +1,5 @@
+task_id,random_seed,inference_config,execution_order,Model_A_tier,Model_A_id,Model_A_latency_ms,Model_A_tokens,Model_A_error,Model_B_tier,Model_B_id,Model_B_latency_ms,Model_B_tokens,Model_B_error
+pilot_01,3098,native_defaults,B_then_A,cheap,gemini/gemini-3.5-flash-lite,3017,789,,strong,gemini/gemini-3.6-flash,13220,1980,
+pilot_02,3098,native_defaults,B_then_A,strong,gemini/gemini-3.6-flash,6588,1223,,cheap,gemini/gemini-3.5-flash-lite,1890,345,
+pilot_03,3098,native_defaults,A_then_B,strong,gemini/gemini-3.6-flash,5384,735,,cheap,gemini/gemini-3.5-flash-lite,1195,157,
+pilot_04,3098,native_defaults,A_then_B,cheap,gemini/gemini-3.5-flash-lite,1508,71,,strong,gemini/gemini-3.6-flash,11536,1427,
